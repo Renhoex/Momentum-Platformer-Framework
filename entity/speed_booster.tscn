@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://cbdsxiqqrbgo2"]
+
+[ext_resource type="Script" path="res://scripts/SpeedBooster.gd" id="1_f4sm6"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hmkkf"]
+size = Vector3(2, 1, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m5tvx"]
+albedo_color = Color(0.207843, 0.254902, 0.376471, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_kh0wg"]
+material = SubResource("StandardMaterial3D_m5tvx")
+top_radius = 0.4
+bottom_radius = 0.4
+radial_segments = 4
+
+[sub_resource type="BoxMesh" id="BoxMesh_4sd26"]
+material = SubResource("StandardMaterial3D_m5tvx")
+size = Vector3(0.1, 2, 2)
+
+[node name="SpeedBooster" type="Area3D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_f4sm6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_hmkkf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0.9)
+mesh = SubResource("CylinderMesh_kh0wg")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0.1)
+mesh = SubResource("BoxMesh_4sd26")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

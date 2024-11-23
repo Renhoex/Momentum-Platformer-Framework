@@ -1,0 +1,172 @@
+[gd_scene load_steps=19 format=3 uid="uid://bi1nyeb4xqty3"]
+
+[ext_resource type="Script" path="res://scripts/Character.gd" id="1_afful"]
+[ext_resource type="PackedScene" uid="uid://cy36aygvs66pn" path="res://model/gobot/gobot_skin.tscn" id="2_hc5gw"]
+[ext_resource type="Texture2D" uid="uid://dq675fmt1rg8c" path="res://model/gobot/textures/open_eye.png" id="3_tb7rg"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_r1b30"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_68d66"]
+size = Vector3(0.1, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_656a0"]
+size = Vector3(0.1, 1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m7uyo"]
+resource_local_to_scene = true
+albedo_texture = ExtResource("3_tb7rg")
+roughness = 0.6
+uv1_offset = Vector3(0.1, 0, 0)
+texture_repeat = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bjw3a"]
+resource_local_to_scene = true
+albedo_texture = ExtResource("3_tb7rg")
+roughness = 0.6
+uv1_offset = Vector3(0.1, 0, 0)
+texture_repeat = false
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ghxoj"]
+animation = &"Fall"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6f2pp"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_knhog"]
+animation = &"Jump"
+
+[sub_resource type="AnimationNodeBlend2" id="AnimationNodeBlend2_j6xv3"]
+
+[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_2hbgk"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hy7gg"]
+animation = &"Run"
+
+[sub_resource type="AnimationNodeBlend2" id="AnimationNodeBlend2_3bsdh"]
+
+[sub_resource type="AnimationNodeTransition" id="AnimationNodeTransition_hef1v"]
+xfade_time = 0.1
+input_0/name = "Idle"
+input_0/auto_advance = false
+input_0/break_loop_at_end = false
+input_0/reset = true
+input_1/name = "Move"
+input_1/auto_advance = false
+input_1/break_loop_at_end = false
+input_1/reset = true
+input_2/name = "Air"
+input_2/auto_advance = false
+input_2/break_loop_at_end = false
+input_2/reset = true
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_g75ag"]
+animation = &"Walk"
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_2aaui"]
+graph_offset = Vector2(-760, 131)
+nodes/Fall/node = SubResource("AnimationNodeAnimation_ghxoj")
+nodes/Fall/position = Vector2(-360, 520)
+nodes/Idle/node = SubResource("AnimationNodeAnimation_6f2pp")
+nodes/Idle/position = Vector2(-200, 20)
+nodes/Jump/node = SubResource("AnimationNodeAnimation_knhog")
+nodes/Jump/position = Vector2(-360, 380)
+nodes/JumpTransition/node = SubResource("AnimationNodeBlend2_j6xv3")
+nodes/JumpTransition/position = Vector2(-161, 411)
+nodes/MoveSpeed/node = SubResource("AnimationNodeTimeScale_2hbgk")
+nodes/MoveSpeed/position = Vector2(-160, 180)
+nodes/Run/node = SubResource("AnimationNodeAnimation_hy7gg")
+nodes/Run/position = Vector2(-560, 280)
+nodes/Speed/node = SubResource("AnimationNodeBlend2_3bsdh")
+nodes/Speed/position = Vector2(-420, 160)
+nodes/States/node = SubResource("AnimationNodeTransition_hef1v")
+nodes/States/position = Vector2(120, 180)
+nodes/Walk/node = SubResource("AnimationNodeAnimation_g75ag")
+nodes/Walk/position = Vector2(-560, 160)
+node_connections = [&"JumpTransition", 0, &"Jump", &"JumpTransition", 1, &"Fall", &"MoveSpeed", 0, &"Speed", &"Speed", 0, &"Walk", &"Speed", 1, &"Run", &"States", 0, &"Idle", &"States", 1, &"MoveSpeed", &"States", 2, &"JumpTransition", &"output", 0, &"States"]
+
+[node name="Character" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+collision_layer = 2
+floor_stop_on_slope = false
+floor_block_on_wall = false
+floor_snap_length = 0.5
+script = ExtResource("1_afful")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_r1b30")
+
+[node name="FloorCheck" type="RayCast3D" parent="."]
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="ModelDisplay" type="Node3D" parent="Pivot"]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Pivot/ModelDisplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+visible = false
+mesh = SubResource("BoxMesh_68d66")
+skeleton = NodePath("../../..")
+
+[node name="NormalPointer" type="MeshInstance3D" parent="Pivot/ModelDisplay"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+visible = false
+mesh = SubResource("BoxMesh_656a0")
+skeleton = NodePath("../../..")
+
+[node name="FrontCheck" type="RayCast3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+
+[node name="BackCheck" type="RayCast3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.433013, 0, 0.25)
+
+[node name="BackCheck2" type="RayCast3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.433013, 0, 0.25)
+
+[node name="GobotSkin" parent="Pivot" instance=ExtResource("2_hc5gw")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -0.6, 0)
+
+[node name="Skeleton3D" parent="Pivot/GobotSkin/gobot/Armature" index="0"]
+bones/0/rotation = Quaternion(0.772549, 0.107691, -0.136221, 0.610749)
+bones/1/rotation = Quaternion(0.679368, -0.310085, 0.392234, 0.537083)
+bones/2/position = Vector3(0, 0.357503, 0)
+bones/2/rotation = Quaternion(0.0697495, -0.0141499, 0.000989455, 0.997464)
+bones/3/rotation = Quaternion(1, 1.16561e-10, -7.59018e-08, 3.72688e-09)
+bones/4/rotation = Quaternion(-0.45119, -0.17633, -0.0588888, 0.87285)
+bones/5/rotation = Quaternion(0.340034, 1.05935e-06, -1.16171e-05, 0.940413)
+bones/6/rotation = Quaternion(-0.231345, 0.512407, 0.198888, 0.802722)
+bones/7/rotation = Quaternion(0.478831, -1.00831e-06, 1.63946e-05, 0.877907)
+bones/8/rotation = Quaternion(-0.705995, -0.246839, -0.595924, 0.292432)
+bones/9/rotation = Quaternion(2.16937e-07, 5.35541e-07, -0.395029, 0.918669)
+bones/10/rotation = Quaternion(-0.289732, -0.637458, -0.217438, 0.680017)
+bones/11/rotation = Quaternion(0.487906, -0.0174399, 0.00854542, 0.87268)
+bones/12/rotation = Quaternion(-0.371224, -0.00197697, 0.00585366, 0.928523)
+bones/13/rotation = Quaternion(-0.502333, 1.50049e-05, -2.85054e-05, 0.864674)
+bones/14/rotation = Quaternion(-0.371224, -0.00197698, 0.00585369, 0.928523)
+bones/15/rotation = Quaternion(-0.502333, 1.49999e-05, -2.85068e-05, 0.864674)
+bones/16/rotation = Quaternion(-0.606125, 0.288813, 0.697257, 0.251064)
+bones/17/rotation = Quaternion(2.27203e-07, -5.84749e-07, 0.395029, 0.918669)
+bones/18/rotation = Quaternion(-0.289732, 0.637458, 0.217438, 0.680017)
+bones/19/rotation = Quaternion(0.487906, 0.0174399, -0.00854541, 0.87268)
+bones/20/rotation = Quaternion(-0.371224, 0.00197697, -0.00585365, 0.928523)
+bones/21/rotation = Quaternion(-0.502333, -1.4988e-05, 2.84986e-05, 0.864674)
+bones/22/rotation = Quaternion(-0.371224, 0.00197698, -0.00585368, 0.928523)
+bones/23/rotation = Quaternion(-0.502333, -1.50034e-05, 2.84914e-05, 0.864674)
+bones/24/rotation = Quaternion(-0.0697565, 4.58965e-08, 3.0345e-09, 0.997564)
+
+[node name="Gobot" parent="Pivot/GobotSkin/gobot/Armature/Skeleton3D" index="0"]
+surface_material_override/1 = SubResource("StandardMaterial3D_m7uyo")
+surface_material_override/2 = SubResource("StandardMaterial3D_bjw3a")
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+root_node = NodePath("../Pivot/GobotSkin/gobot")
+tree_root = SubResource("AnimationNodeBlendTree_2aaui")
+anim_player = NodePath("../Pivot/GobotSkin/gobot/AnimationPlayer")
+parameters/JumpTransition/blend_amount = 1.0
+parameters/MoveSpeed/scale = 1.0
+parameters/Speed/blend_amount = 0.0
+parameters/States/current_state = "Idle"
+parameters/States/transition_request = ""
+parameters/States/current_index = 0
+
+[editable path="Pivot/GobotSkin"]
+[editable path="Pivot/GobotSkin/gobot"]
